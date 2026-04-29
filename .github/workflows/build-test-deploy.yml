@@ -5,7 +5,7 @@ on:
       - main
   workflow_dispatch:
 jobs:
-    prep-env:
+    build:
       runs-on: ubuntu-latest
       steps:
         - name: Clone repo
@@ -14,22 +14,30 @@ jobs:
           uses: actions/setup-dotnet@v4
           with:
             dotnet-version: "10.0.x"
-    build:
-      needs: prep-env
-      runs-on: ubuntu-latest
-      steps:
         - name: Build app
           run: dotnet build PG3CICDGent/PG3CICDGent.slnx
     test:
       needs: build
       runs-on: ubuntu-latest
       steps:
+        - name: Clone repo
+          uses: actions/checkout@v4
+        - name: Install dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: "10.0.x"        
         - name: Run tests
           run: dotnet test PG3CICDGent/Test*/*.csproj
     deploy:
-      needs: build
+      needs: test
       runs-on: ubuntu-latest
       steps:
+        - name: Clone repo
+          uses: actions/checkout@v4
+        - name: Install dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: "10.0.x"
         - name: Publish
           run: dotnet publish PG3CICDGent/PG3CICDGent/PG3CICDGent.csproj -o ${{ github.workspace }}/publish
         - name: Deploy
