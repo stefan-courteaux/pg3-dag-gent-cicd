@@ -16,3 +16,5 @@ jobs:
             dotnet-version: "10.0.x"
         - name: Build app
           run: dotnet build PG3CICDGent/PG3CICDGent.slnx
+        - name: Run tests
+          run: dotnet test PG3CICDGent/Test*/*.csproj
