@@ -5,7 +5,7 @@ on:
       - main
   workflow_dispatch:
 jobs:
-    hogent-cicd-demo:
+    prep-env:
       runs-on: ubuntu-latest
       steps:
         - name: Clone repo
@@ -14,10 +14,22 @@ jobs:
           uses: actions/setup-dotnet@v4
           with:
             dotnet-version: "10.0.x"
+    build:
+      needs: prep-env
+      runs-on: ubuntu-latest
+      steps:
         - name: Build app
           run: dotnet build PG3CICDGent/PG3CICDGent.slnx
+    test:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
         - name: Run tests
           run: dotnet test PG3CICDGent/Test*/*.csproj
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
         - name: Publish
           run: dotnet publish PG3CICDGent/PG3CICDGent/PG3CICDGent.csproj -o ${{ github.workspace }}/publish
         - name: Deploy
@@ -25,4 +37,4 @@ jobs:
           with:
             app-name: "hogent-pg3-dag-cicd"
             publish-profile: ${{ secrets.API_PUBLISH_PROFILE_AZURE }} 
-            package: ${{ github.workspace }}/publish
+            package: ${{ github.workspace }}/publish      
