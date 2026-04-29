@@ -18,3 +18,11 @@ jobs:
           run: dotnet build PG3CICDGent/PG3CICDGent.slnx
         - name: Run tests
           run: dotnet test PG3CICDGent/Test*/*.csproj
+        - name: Publish
+          run: dotnet publish PG3CICDGent/PG3CICDGent/PG3CICDGent.csproj -o ${{ github.workspace }}/publish
+        - name: Deploy
+          uses: azure/webapps-deploy@v3
+          with:
+            app-name: "hogent-pg3-dag-cicd"
+            publish-profile: ${{ secrets.API_PUBLISH_PROFILE_AZURE }} 
+            package: ${{ github.workspace }}/publish
